@@ -5,7 +5,25 @@ ANSWER_RANGE_START = 1
 ANSWER_RANGE_END = 10
 STARTING_TRIES = 5
 
-def play(lowest_num, highest_num):
+def run():
+    printMenu()
+
+def printMenu():
+    menu_options = {
+        1: "Play",
+        2: "Save data (Creates local file in game directory)",
+        3: "Load save data",
+        4: "Quit"
+    }
+
+    print("-------------------------------------------------")
+    print("----------------------------------------------------")
+    for key, option in menu_options.items():
+        print(f"{key} -- {option}")
+    print("----------------------------------------------------")
+    print("----------------------------------------------------")
+
+def playGame(lowest_num, highest_num):
     answer = randint(lowest_num, highest_num)
     tries_left = STARTING_TRIES
     game_over = False
@@ -33,8 +51,7 @@ def play(lowest_num, highest_num):
     print(f"Thanks for playing")
 
 if __name__ == "__main__":
-    play(ANSWER_RANGE_START, ANSWER_RANGE_END)
-
+    run()
 
 
 
