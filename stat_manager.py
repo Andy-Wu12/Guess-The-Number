@@ -11,14 +11,19 @@ class StatManager:
         self.num_first_guesses_correct = 0
 
         # Miscellaneous
-        self.slowest_win = -1
-        self.highest_difficulty_beaten = -1
+        self.fastest_win_in_turns = -1
+        self.slowest_win_in_turns = -1
+        self.highest_difficulty_beaten = ""
         self.num_easy_wins = 0
         self.num_med_wins = 0
         self.num_hard_wins = 0
 
     def __str__(self):
-        pass
+        return "\n".join(f"{stat}: {value}" for stat, value in self.__dict__.items())
+
+    def prettyPrint(self):
+        print("\nYour game statistics")
+        util.printWithBorder(self.__str__())
 
     def save(self):
         pass

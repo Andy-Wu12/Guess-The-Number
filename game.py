@@ -31,9 +31,7 @@ def run():
             continue
 
 def printMenu():
-    menu_str = ""
-    for key, option in menu_options.items():
-        menu_str += f"{key} -- {option}\n"
+    menu_str = ("\n".join(f"{key} -- {option}" for key, option in menu_options.items()))
 
     util.printWithBorder(menu_str.strip())
 
@@ -45,7 +43,7 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
     elif menu_choice == 3:
         print("Loading is still in development. Check back later!\n")
     elif menu_choice == 4:
-        print("Stats will be implemented when saving/loading are done.\n")
+        manager.prettyPrint()
     elif menu_choice == 9:
         print("Exiting program...")
         exit(0)
