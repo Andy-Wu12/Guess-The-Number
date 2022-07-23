@@ -10,7 +10,8 @@ menu_options = {
         1: "Play",
         2: "Save data (Creates local file in game directory)",
         3: "Load save data",
-        4: "Quit"
+        4: "Statistics",
+        9: "Quit"
     }
 
 def run():
@@ -26,10 +27,8 @@ def run():
 
 def printMenu():
     print("\n----------------------------------------------------")
-    print("----------------------------------------------------")
     for key, option in menu_options.items():
         print(f"{key} -- {option}")
-    print("----------------------------------------------------")
     print("----------------------------------------------------\n")
 
 def handleMenuChoice(menu_choice: int):
@@ -40,6 +39,8 @@ def handleMenuChoice(menu_choice: int):
     elif menu_choice == 3:
         print("Loading is still in development. Check back later!")
     elif menu_choice == 4:
+        print("Stats will be implemented when saving/loading are done.")
+    elif menu_choice == 9:
         print("Exiting program...")
         exit(0)
     else:
@@ -54,9 +55,9 @@ def playGame(lowest_num: int, highest_num: int):
         guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
         try:
             guess_int = int(guess_str)
+            # Make it easier for user by handling error where they enter a number that the answer cannot possibly be
             if guess_int < ANSWER_RANGE_START or guess_int > ANSWER_RANGE_END:
                 raise GameExceptions.OutOfRangeError
-        # Don't handle issue of user guessing a number out of range, as that is part of the game.
         except (ValueError, GameExceptions.OutOfRangeError):
             print("You did not enter an integer in the given range!")
             continue
@@ -71,7 +72,7 @@ def playGame(lowest_num: int, highest_num: int):
             print(f"Your guess was lower than the answer.")
             tries_left -= 1
 
-    print(f"Thanks for playing")
+    print(f"Thanks for playing. Returning to menu..")
 
 if __name__ == "__main__":
     run()
