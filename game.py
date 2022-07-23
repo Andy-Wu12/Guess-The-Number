@@ -1,29 +1,51 @@
 from random import randint
 
-# TODO: Create menu options to allow for difficulty levels with higher value ranges
+import GameExceptions
+
 ANSWER_RANGE_START = 1
 ANSWER_RANGE_END = 10
 STARTING_TRIES = 5
 
-def run():
-    printMenu()
-
-def printMenu():
-    menu_options = {
+menu_options = {
         1: "Play",
         2: "Save data (Creates local file in game directory)",
         3: "Load save data",
         4: "Quit"
     }
 
-    print("-------------------------------------------------")
+def run():
+    while True:
+        printMenu()
+        user_in = input("Please select an option from above: ")
+        try:
+            option_key = int(user_in)
+            handleMenuChoice(option_key)
+        except (ValueError, GameExceptions.OutOfRangeError):
+            print("You did not enter a valid option. Please try again.")
+            continue
+
+def printMenu():
+    print("\n----------------------------------------------------")
     print("----------------------------------------------------")
     for key, option in menu_options.items():
         print(f"{key} -- {option}")
     print("----------------------------------------------------")
-    print("----------------------------------------------------")
+    print("----------------------------------------------------\n")
 
-def playGame(lowest_num, highest_num):
+def handleMenuChoice(menu_choice: int):
+    if menu_choice == 1:
+        playGame(ANSWER_RANGE_START, ANSWER_RANGE_END)
+    elif menu_choice == 2:
+        print("Saving is still in development. Check back later!")
+    elif menu_choice == 3:
+        print("Loading is still in development. Check back later!")
+    elif menu_choice == 4:
+        print("Exiting program...")
+        exit(0)
+    else:
+        raise GameExceptions.OutOfRangeError
+
+def playGame(lowest_num: int, highest_num: int):
     answer = randint(lowest_num, highest_num)
     tries_left = STARTING_TRIES
     game_over = False
@@ -32,10 +54,11 @@ def playGame(lowest_num, highest_num):
         guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
         try:
             guess_int = int(guess_str)
-
+            if guess_int < ANSWER_RANGE_START or guess_int > ANSWER_RANGE_END:
+                raise GameExceptions.OutOfRangeError
         # Don't handle issue of user guessing a number out of range, as that is part of the game.
-        except ValueError:
-            print("You did not enter an integer.")
+        except (ValueError, GameExceptions.OutOfRangeError):
+            print("You did not enter an integer in the given range!")
             continue
 
         if guess_int == answer:
