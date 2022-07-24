@@ -1,5 +1,5 @@
 # Guess-The-Number
-A command-line game where the player has to guess a randomly generated number in a given range limited tries.
+A command-line game where the player has to guess a randomly generated number in a given range with limited tries.
 
 ## Dependencies
 You will need at least [Python 3.0](https://www.python.org/downloads/) to run this program.

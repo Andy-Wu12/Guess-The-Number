@@ -39,7 +39,8 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
     if menu_choice == 1:
         playGame(ANSWER_RANGE_START, ANSWER_RANGE_END, manager)
     elif menu_choice == 2:
-        print("Saving is still in development. Check back later!\n")
+        print("Saving data...")
+        manager.save()
     elif menu_choice == 3:
         print("Loading is still in development. Check back later!\n")
     elif menu_choice == 4:
@@ -53,9 +54,8 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
 def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
     answer = randint(lowest_num, highest_num)
     tries_left = STARTING_TRIES
-    game_over = False
 
-    while not game_over:
+    while True:
         print(f"You have {tries_left} guesses remaining\n")
         guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
         try:
@@ -67,10 +67,11 @@ def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
             print("You did not enter an integer in the given range!")
             continue
 
+        manager.num_guesses += 1
         if guess_int == answer:
             print(f"You guessed it! The number was {answer}.")
             manager.wins += 1
-            game_over = True
+            break
         elif guess_int > answer:
             print(f"Your guess was higher than the answer.\n")
             tries_left -= 1
@@ -80,10 +81,12 @@ def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
 
         if tries_left == 0:
             manager.losses += 1
-            game_over = True
             print("You are out of guesses.")
+            break
 
     print(f"Thanks for playing. Returning to menu..")
+    # Automatically save stats after every completed game, otherwise user must do it manually
+    manager.save()
 
 if __name__ == "__main__":
     run()

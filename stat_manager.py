@@ -35,12 +35,17 @@ class StatManager:
     def __str__(self):
         return "\n".join(f"{stat}: {value}" for stat, value in self.__dict__.items())
 
+    def toJson(self):
+        return self.__dict__
+
     def prettyPrint(self):
         print("\nYour game statistics")
         util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
 
     def save(self):
-        pass
+        with open("persistent", "w") as f:
+            json.dump(self.toJson(), f, indent=2)
+        print("Save successful!")
 
     def load(self):
         pass
