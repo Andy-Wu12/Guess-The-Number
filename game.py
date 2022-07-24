@@ -53,10 +53,11 @@ def playGame(gm: GameManager, sm: StatManager):
     lowest_num = gm.ANSWER_RANGE_START
     highest_num = gm.ANSWER_RANGE_END
 
+    game_over = False
     answer = randint(lowest_num, highest_num)
     tries_left = gm.STARTING_CHANCES
 
-    while True:
+    while not game_over:
         print(f"You have {tries_left} guesses remaining\n")
         guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
         try:
@@ -72,6 +73,7 @@ def playGame(gm: GameManager, sm: StatManager):
         if guess_int == answer:
             print(f"You guessed it! The number was {answer}.")
             sm.wins += 1
+            game_over = True
         elif guess_int > answer:
             print("Your guess was higher than the answer.\n")
             tries_left -= 1
@@ -81,6 +83,7 @@ def playGame(gm: GameManager, sm: StatManager):
 
         if tries_left == 0:
             sm.losses += 1
+            game_over = True
             print("You are out of guesses.")
 
     print("Thanks for playing. Returning to menu..")
