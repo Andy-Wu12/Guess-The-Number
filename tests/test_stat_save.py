@@ -6,6 +6,10 @@ from game import Game
 from stat_manager import StatManager
 
 class TestSaves:
+    def __init__(self):
+        self.game = None
+        self.stat_manager = None
+
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
         # Setup code needed before tests run
@@ -26,4 +30,3 @@ class TestSaves:
     def test_savefile_created_on_save(self):
         self.game.saveGameStats()
         assert os.path.exists(self.game.SAVEFILE_NAME)
-
