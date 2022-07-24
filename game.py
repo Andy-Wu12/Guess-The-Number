@@ -80,32 +80,24 @@ def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
         if guess_int == answer:
             print(f"You guessed it! The number was {answer}.")
             manager.wins += 1
-            break
         elif guess_int > answer:
-            print(f"Your guess was higher than the answer.\n")
+            print("Your guess was higher than the answer.\n")
             tries_left -= 1
         else:
-            print(f"Your guess was lower than the answer.\n")
+            print("Your guess was lower than the answer.\n")
             tries_left -= 1
 
         if tries_left == 0:
             manager.losses += 1
             print("You are out of guesses.")
-            break
 
-    print(f"Thanks for playing. Returning to menu..")
+    print("Thanks for playing. Returning to menu..")
     # Automatically save stats after every completed game, otherwise user must do it manually
     saveGameStats(manager)
 
 def saveGameStats(manager: stat_manager):
-    global HAS_SAVE
 
     manager.save()
-    HAS_SAVE = True
 
 if __name__ == "__main__":
     run()
-
-
-
-
