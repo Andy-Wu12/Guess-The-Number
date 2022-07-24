@@ -1,15 +1,10 @@
 import os.path
-
 import pytest
 
 from game import Game
 from stat_manager import StatManager
 
 class TestSaves:
-    def __init__(self):
-        self.game = None
-        self.stat_manager = None
-
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
         # Setup code needed before tests run
