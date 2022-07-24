@@ -41,15 +41,17 @@ class StatManager:
         print("\nYour game statistics")
         util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
 
-    def save(self):
-        with open("./persistent", "w", encoding="utf-8") as f:
+    def save(self, filename):
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.toJson(), f, indent=2)
+        f.close()
         print("Save successful!")
 
-    def load(self):
+    def load(self, filename):
         try:
-            with open("./persistent", "r", encoding="utf-8") as f:
+            with open(filename, "r", encoding="utf-8") as f:
                 stat_data = json.load(f)
+            f.close()
         except (FileNotFoundError, json.JSONDecodeError):
             print("Error in loading save file! Make sure to save or play a game first before attempting to load!")
             return
