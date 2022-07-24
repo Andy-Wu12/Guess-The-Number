@@ -1,5 +1,6 @@
 from random import randint
 from os.path import exists
+import sys
 
 import util
 import stat_manager
@@ -55,7 +56,7 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
         manager.prettyPrint()
     elif menu_choice == 9:
         print("Exiting program...")
-        exit(0)
+        sys.exit()
     else:
         raise GameExceptions.OutOfRangeError
 
@@ -96,8 +97,10 @@ def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
     saveGameStats(manager)
 
 def saveGameStats(manager: stat_manager):
+    global HAS_SAVE
 
     manager.save()
+    HAS_SAVE = True
 
 if __name__ == "__main__":
     run()
