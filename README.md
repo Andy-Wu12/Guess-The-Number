@@ -1,6 +1,11 @@
 # Guess-The-Number
 A command-line game where the player has to guess a randomly generated number in a given range with limited tries.
 
+## Codiga Quality Badges
+![picture](https://api.codiga.io/project/34133/score/svg)
+
+![picture](https://api.codiga.io/project/34133/status/svg)
+
 ## Dependencies
 You will need at least [Python 3.0](https://www.python.org/downloads/) to run this program.
 
