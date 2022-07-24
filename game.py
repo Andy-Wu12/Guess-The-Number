@@ -1,4 +1,5 @@
 from random import randint
+from os.path import exists
 
 import util
 import stat_manager
@@ -8,6 +9,7 @@ import GameExceptions
 ANSWER_RANGE_START = 1
 ANSWER_RANGE_END = 10
 STARTING_TRIES = 5
+HAS_SAVE = exists("./persistent")
 
 menu_options = {
         1: "Play",
@@ -31,7 +33,13 @@ def run():
             continue
 
 def printMenu():
-    menu_str = ("\n".join(f"{key} -- {option}" for key, option in menu_options.items()))
+    if HAS_SAVE:
+        menu_str = ("\n".join(f"{key} -- {option}" for key, option in menu_options.items()))
+    # Disable load option in menu
+    else:
+        menu_str = ("\n".join(
+            f"{key} -- {option}" for key, option in menu_options.items() if option != "Load save data")
+        )
 
     util.printWithBorder(menu_str.strip())
 
@@ -40,8 +48,8 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
         playGame(ANSWER_RANGE_START, ANSWER_RANGE_END, manager)
     elif menu_choice == 2:
         print("Saving data...")
-        manager.save()
-    elif menu_choice == 3:
+        saveGameStats(manager)
+    elif menu_choice == 3 and HAS_SAVE:
         manager.load()
     elif menu_choice == 4:
         manager.prettyPrint()
@@ -52,6 +60,7 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
         raise GameExceptions.OutOfRangeError
 
 def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
+
     answer = randint(lowest_num, highest_num)
     tries_left = STARTING_TRIES
 
@@ -86,7 +95,13 @@ def playGame(lowest_num: int, highest_num: int, manager: stat_manager):
 
     print(f"Thanks for playing. Returning to menu..")
     # Automatically save stats after every completed game, otherwise user must do it manually
+    saveGameStats(manager)
+
+def saveGameStats(manager: stat_manager):
+    global HAS_SAVE
+
     manager.save()
+    HAS_SAVE = True
 
 if __name__ == "__main__":
     run()
