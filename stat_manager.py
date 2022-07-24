@@ -16,7 +16,6 @@ varNameToStatName = {
     }
 
 class StatManager:
-
     def __init__(self):
         # Counters
         self.wins = 0
