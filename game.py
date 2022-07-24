@@ -42,7 +42,7 @@ def handleMenuChoice(menu_choice: int, manager: stat_manager):
         print("Saving data...")
         manager.save()
     elif menu_choice == 3:
-        print("Loading is still in development. Check back later!\n")
+        manager.load()
     elif menu_choice == 4:
         manager.prettyPrint()
     elif menu_choice == 9:

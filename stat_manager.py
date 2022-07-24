@@ -48,5 +48,15 @@ class StatManager:
         print("Save successful!")
 
     def load(self):
-        pass
+        try:
+            with open("persistent", "r") as f:
+                stat_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            print("Error in loading save file! Make sure to save or play a game first before attempting to load!")
+            return
+
+        self.__dict__ = stat_data
+        print("Load successful!")
+
+
 
