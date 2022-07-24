@@ -1,0 +1,3 @@
+
+class OutOfRangeError(Exception):
+    pass
