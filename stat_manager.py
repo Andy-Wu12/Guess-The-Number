@@ -51,10 +51,13 @@ class StatManager:
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 stat_data = json.load(f)
+                print(stat_data)
             f.close()
-        except (FileNotFoundError, json.JSONDecodeError):
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(e)
             print("Error in loading save file! Make sure to save or play a game first before attempting to load!")
-            return
+            return False
 
         self.__dict__ = stat_data
         print("Load successful!")
+        return True
