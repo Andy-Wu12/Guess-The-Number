@@ -1,4 +1,3 @@
-import os.path
 import pytest
 import json
 
@@ -11,7 +10,7 @@ def get_stat_data(filename: str) -> dict:
 
     return stat_data
 
-BAD_JSON = { 'randomField': 'hi', 'secondField': 'world' }
+BAD_JSON = {'randomField': 'hi', 'secondField': 'world'}
 GOOD_JSON = StatManager().__dict__
 NO_JSON = "random text that isn't json"
 
