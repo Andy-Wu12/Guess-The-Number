@@ -2,7 +2,6 @@ import os.path
 import pytest
 import json
 
-from game import Game
 from stat_manager import StatManager
 
 def get_stat_data(filename: str) -> dict:
@@ -12,31 +11,40 @@ def get_stat_data(filename: str) -> dict:
 
     return stat_data
 
-class TestSaves:
+BAD_JSON = { 'randomField': 'hi', 'secondField': 'world' }
+GOOD_JSON = StatManager().__dict__
+NO_JSON = "random text that isn't json"
+
+class TestStatManager:
     @pytest.fixture(autouse=True)
-    def setup_and_teardown(self):
+    def setup_and_teardown(self, tmp_path):
         # Setup code needed before tests run
-        self.game = Game()
         self.stat_manager = StatManager()
+        temp_dir = tmp_path / "test_root"
+
+        bad_json_file = temp_dir / "bad_json.txt"
+        bad_json_file.write_text(json.dumps(BAD_JSON))
+        good_json_file = temp_dir / "good_json.txt"
+        good_json_file.write_text(json.dumps(GOOD_JSON))
+        no_json = temp_dir / "no_json.txt"
+        no_json.write_text(NO_JSON)
+
         # Actual tests run while yielding
         yield
         # Teardown by deleting SAVE FILE after each test
-        if os.path.exists(self.game.SAVEFILE_NAME):
-            from os import remove
-            remove(self.game.SAVEFILE_NAME)
 
-    # TEST: Initial persistent file should not exist on very first startup
-    def test_savefile_missing_on_first_start(self):
-        assert not os.path.exists(self.game.SAVEFILE_NAME)
+    # TEST: Ensure requested filename should load if it contains JSON
+    def test_valid_filename_load(self):
+        pass
 
-    # TEST: Ensure persistent file exists after saving
-    def test_savefile_created_on_save(self):
-        self.game.saveGameStats()
-        assert os.path.exists(self.game.SAVEFILE_NAME)
+    # TEST: Ensure error thrown if filename not found
+    def test_invalid_filename_load(self):
+        pass
 
-    # TEST: Ensure saving stats works properly.
-    # Additional tests can be added to check for updated stats, but it can get redundant
-    def test_saving_default__data(self):
-        self.game.saveGameStats()
-        stat_data = get_stat_data(self.game.SAVEFILE_NAME)
-        assert stat_data == self.stat_manager.__dict__
+    # TEST: StatManager should handle exception where save file does not contain JSON
+    def test_file_no_json(self):
+        pass
+
+    # TEST: Ensure JSON document provides all the necessary stats for StatsManager
+    def test_file_bad_json(self):
+        pass

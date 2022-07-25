@@ -41,7 +41,7 @@ class StatManager:
         print("\nYour game statistics")
         util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
 
-    def save(self, filename):
+    def save(self, filename: str):
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.to_json(), f, indent=2)
         f.close()
