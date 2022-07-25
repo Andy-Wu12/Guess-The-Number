@@ -1,5 +1,6 @@
 import os.path
 import pytest
+import json
 
 from game import Game
 from stat_manager import StatManager
@@ -25,3 +26,12 @@ class TestSaves:
     def test_savefile_created_on_save(self):
         self.game.saveGameStats()
         assert os.path.exists(self.game.SAVEFILE_NAME)
+
+    # TEST: Ensure saving stats works properly.
+    # Additional tests can be added to check for updated stats, but it can get redundant
+    def test_saving_default__data(self):
+        self.game.saveGameStats()
+        with open(self.game.SAVEFILE_NAME, "r", encoding="utf-8") as f:
+            stat_data = json.load(f)
+            assert stat_data == self.stat_manager.__dict__
+        f.close()
