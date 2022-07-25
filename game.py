@@ -57,7 +57,7 @@ class Game:
         elif menu_choice == 3 and self.HAS_SAVE:
             self.stat_manager.load(self.SAVEFILE_NAME)
         elif menu_choice == 4:
-            self.stat_manager.prettyPrint()
+            self.stat_manager.pretty_print()
         elif menu_choice == 9:
             self.stopGame()
         else:

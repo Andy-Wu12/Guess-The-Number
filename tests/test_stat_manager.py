@@ -5,6 +5,13 @@ import json
 from game import Game
 from stat_manager import StatManager
 
+def get_stat_data(filename: str) -> dict:
+    with open(filename, "r", encoding="utf-8") as f:
+        stat_data = json.load(f)
+    f.close()
+
+    return stat_data
+
 class TestSaves:
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
@@ -31,7 +38,5 @@ class TestSaves:
     # Additional tests can be added to check for updated stats, but it can get redundant
     def test_saving_default__data(self):
         self.game.saveGameStats()
-        with open(self.game.SAVEFILE_NAME, "r", encoding="utf-8") as f:
-            stat_data = json.load(f)
-            assert stat_data == self.stat_manager.__dict__
-        f.close()
+        stat_data = get_stat_data(self.game.SAVEFILE_NAME)
+        assert stat_data == self.stat_manager.__dict__

@@ -34,16 +34,16 @@ class StatManager:
     def __str__(self):
         return "\n".join(f"{stat}: {value}" for stat, value in self.__dict__.items())
 
-    def toJson(self):
+    def to_json(self):
         return self.__dict__
 
-    def prettyPrint(self):
+    def pretty_print(self):
         print("\nYour game statistics")
         util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
 
     def save(self, filename):
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.toJson(), f, indent=2)
+            json.dump(self.to_json(), f, indent=2)
         f.close()
         print("Save successful!")
 
