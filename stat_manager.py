@@ -1,6 +1,7 @@
 import json
 
 import util
+import GameExceptions
 
 varNameToStatName = {
         "wins": "Games Won",
@@ -50,14 +51,28 @@ class StatManager:
     def load(self, filename):
         try:
             with open(filename, "r", encoding="utf-8") as f:
-                stat_data = json.load(f)
+                stat_data = json.loads(f.read())
                 print(stat_data)
             f.close()
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(e)
-            print("Error in loading save file! Make sure to save or play a game first before attempting to load!")
-            return False
+            raise e
+
+        # Don't depend on current StatManager object. Create fresh instance and compare keys and value types with it
+        if not isValidDict(StatManager().__dict__, stat_data):
+            raise GameExceptions.InvalidSaveFormatError
 
         self.__dict__ = stat_data
         print("Load successful!")
         return True
+
+
+def isValidDict(desired_dict, dict_to_check):
+    # JSON in file, but does not contain the necessary stats required by StatManager
+    for key, value in desired_dict.items():
+        if key not in dict_to_check:
+            return False
+        # Stat value is the incorrect type
+        if not isinstance(dict_to_check[key], type(value)):
+            return False
+
+    return True

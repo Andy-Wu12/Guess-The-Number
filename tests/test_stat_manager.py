@@ -10,9 +10,14 @@ TEMP_DIR_NAME = "test_root"
 BAD_JSON = {'randomField': 'hi', 'secondField': 'world'}
 GOOD_JSON = StatManager().__dict__
 NO_JSON = "random text that isn't json"
+MALFORMED_GOOD_JSON = StatManager().__dict__
+
+for key, value in MALFORMED_GOOD_JSON.items():
+    MALFORMED_GOOD_JSON[key] = "this is not an int!"
 
 BAD_JSON_NAME = "bad_json.txt"
 GOOD_JSON_NAME = "good_json.txt"
+MALFORMED_GOOD_JSON_NAME = "partial_good_json.txt"
 NO_JSON_NAME = "no_json.txt"
 
 
@@ -30,6 +35,8 @@ def test_files(tmp_path_factory):
     bad_json_file.write_text(json.dumps(BAD_JSON))
     good_json_file = temp_dir / GOOD_JSON_NAME
     good_json_file.write_text(json.dumps(GOOD_JSON))
+    malformed_json_file = temp_dir / MALFORMED_GOOD_JSON_NAME
+    malformed_json_file.write_text(json.dumps(MALFORMED_GOOD_JSON))
     no_json = temp_dir / NO_JSON_NAME
     no_json.write_text(NO_JSON)
     # Return path to base of temp directory in case it is needed
@@ -45,7 +52,7 @@ class TestStatManager:
         # Setup code needed before tests run
         self.stat_manager = StatManager()
 
-    # TEST: Ensure requested filename should load if it contains JSON
+    # TEST: Ensure requested filename should load if it contains properly formatted JSON with correct value types
     def test_valid_filename_load(self, test_files):
         try:
             assert self.stat_manager.load(getFilePath(GOOD_JSON_NAME, test_files))
@@ -76,12 +83,17 @@ class TestStatManager:
     # TEST: Ensure method success if JSON document provides the necessary stats for StatsManager
     def test_file_correct_stats(self, test_files):
         required_keys = self.stat_manager.__dict__.keys()
-        loaded_json = self.stat_manager.load(getFilePath(GOOD_JSON_NAME, test_files))
+        assert self.stat_manager.load(getFilePath(GOOD_JSON_NAME, test_files))
 
-        for key in required_keys:
-            assert key in loaded_json
+        for stat_key in required_keys:
+            assert stat_key in self.stat_manager.__dict__
 
     # TEST: Ensure exception is thrown if JSON document does not provide necessary stats
-    def test_file_incorrect_stats(self, test_files):
+    def test_file_incorrect_stat_keys(self, test_files):
         with pytest.raises(GameExceptions.InvalidSaveFormatError):
             self.stat_manager.load(getFilePath(BAD_JSON_NAME, test_files))
+
+    # TEST: Ensure exception is thrown if JSON document has correct stat keys, but incorrect data types for the values
+    def test_file_invalid_stat_values(self, test_files):
+        with pytest.raises(GameExceptions.InvalidSaveFormatError):
+            self.stat_manager.load(getFilePath(MALFORMED_GOOD_JSON_NAME, test_files))

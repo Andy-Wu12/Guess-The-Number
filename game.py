@@ -2,6 +2,7 @@
 from random import randint
 import sys
 import os.path
+from json import JSONDecodeError
 
 # Custom modules
 from stat_manager import StatManager
@@ -55,7 +56,12 @@ class Game:
             print("Saving data...")
             self.saveGameStats()
         elif menu_choice == 3 and self.HAS_SAVE:
-            self.stat_manager.load(self.SAVEFILE_NAME)
+            try:
+                self.stat_manager.load(self.SAVEFILE_NAME)
+            except (FileNotFoundError, JSONDecodeError, GameExceptions.InvalidSaveFormatError):
+                print("Error loading save file!")
+                print("Complete a game or use the save option to generate a new save file!")
+                self.HAS_SAVE = False
         elif menu_choice == 4:
             self.stat_manager.pretty_print()
         elif menu_choice == 9:
