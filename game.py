@@ -16,6 +16,7 @@ class Game:
         self.STARTING_CHANCES = chances
         self.SAVEFILE_NAME = "./persistent"
         self.HAS_SAVE = os.path.exists(self.SAVEFILE_NAME)
+        self.DIFFICULTY = "easy"
 
         self.menu_options = {
             1: "Play",
@@ -24,7 +25,6 @@ class Game:
             4: "Statistics",
             9: "Quit"
         }
-
         self.stat_manager = StatManager()
 
     def run(self):
@@ -113,6 +113,12 @@ class Game:
     def saveGameStats(self):
         self.stat_manager.save(self.SAVEFILE_NAME)
         self.HAS_SAVE = True
+
+    def win(self):
+        pass
+
+    def lose(self):
+        pass
 
     @staticmethod
     def stopGame():
