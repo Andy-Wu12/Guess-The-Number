@@ -1,6 +1,7 @@
 import json
 
 import util
+import GameExceptions
 
 varNameToStatName = {
         "wins": "Games Won",
@@ -34,27 +35,44 @@ class StatManager:
     def __str__(self):
         return "\n".join(f"{stat}: {value}" for stat, value in self.__dict__.items())
 
-    def toJson(self):
+    def to_json(self):
         return self.__dict__
 
-    def prettyPrint(self):
+    def pretty_print(self):
         print("\nYour game statistics")
         util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
 
-    def save(self, filename):
+    def save(self, filename: str):
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.toJson(), f, indent=2)
+            json.dump(self.to_json(), f, indent=2)
         f.close()
         print("Save successful!")
 
     def load(self, filename):
         try:
             with open(filename, "r", encoding="utf-8") as f:
-                stat_data = json.load(f)
+                stat_data = json.loads(f.read())
+                print(stat_data)
             f.close()
-        except (FileNotFoundError, json.JSONDecodeError):
-            print("Error in loading save file! Make sure to save or play a game first before attempting to load!")
-            return
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            raise e
+
+        # Don't depend on current StatManager object. Create fresh instance and compare keys and value types with it
+        if not isValidDict(StatManager().__dict__, stat_data):
+            raise GameExceptions.InvalidSaveFormatError
 
         self.__dict__ = stat_data
         print("Load successful!")
+        return True
+
+
+def isValidDict(desired_dict, dict_to_check):
+    # JSON in file, but does not contain the necessary stats required by StatManager
+    for key, value in desired_dict.items():
+        if key not in dict_to_check:
+            return False
+        # Stat value is the incorrect type
+        if not isinstance(dict_to_check[key], type(value)):
+            return False
+
+    return True
