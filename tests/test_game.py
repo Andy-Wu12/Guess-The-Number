@@ -79,17 +79,20 @@ class TestGame:
 
     # TEST: Ensure wins on easy mode increment "num_easy_wins" and wins
     def test_easy_win(self):
-        assert self.generateDifficultyWinTest('easy', 1000)
+        num_easy_wins = self.generateDifficultyWinTest('easy', 10)
+        assert self.game.stat_manager.num_easy_wins == num_easy_wins
 
     # TEST: Ensure wins on med mode increment "num_med_wins"
     def test_med_win(self):
-        assert self.generateDifficultyWinTest('medium', 1000)
+        num_med_wins = self.generateDifficultyWinTest('medium', 10)
+        assert self.game.stat_manager.num_med_wins == num_med_wins
 
-    # TEST: Ensure wins on hard increment "num_hard_wins"
+        # TEST: Ensure wins on hard increment "num_hard_wins"
     def test_hard_wins(self):
-        assert self.generateDifficultyWinTest('hard', 1000)
+        num_hard_wins = self.generateDifficultyWinTest('hard', 10)
+        assert self.game.stat_manager.num_hard_wins == num_hard_wins
 
-    # Helpers
+        # Helpers
     def generateDifficultiesList(self, amount: int):
         return [random.choice(self.difficulties) for _ in range(amount)]
 
@@ -100,7 +103,8 @@ class TestGame:
         for difficulty in rand_diffs:
             self.game.setDifficulty(difficulty)
             self.game.win()
+            print(f"{self.game.stat_manager}\n")
             if difficulty == difficultyToCheck:
                 num_diff_wins += 1
 
-        return rand_diffs.count(difficultyToCheck) == num_diff_wins
+        return num_diff_wins
