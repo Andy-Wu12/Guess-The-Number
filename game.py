@@ -10,19 +10,20 @@ import util
 import GameExceptions
 
 class Game:
-    def __init__(self, range_start: int = 1, range_end: int = 10, chances: int = 5):
+    def __init__(self, difficulty: str = 'easy', range_start: int = 1, range_end: int = 10, chances: int = 5):
         self.ANSWER_RANGE_START = range_start
         self.ANSWER_RANGE_END = range_end
         self.STARTING_CHANCES = chances
         self.SAVEFILE_NAME = "./persistent"
         self.HAS_SAVE = os.path.exists(self.SAVEFILE_NAME)
-        self.DIFFICULTY = "easy"
+        self.DIFFICULTY = difficulty
 
         self.menu_options = {
             1: "Play",
             2: "Save data (Creates local file in game directory)",
             3: "Load save data",
             4: "Statistics",
+            5: "Choose difficulty",
             9: "Quit"
         }
         self.stat_manager = StatManager()
@@ -64,6 +65,8 @@ class Game:
                 self.HAS_SAVE = False
         elif menu_choice == 4:
             self.stat_manager.pretty_print()
+        elif menu_choice == 5:
+            self.changeDifficulty(input("Enter difficulty (easy, medium, hard): "))
         elif menu_choice == 9:
             self.stopGame()
         else:
@@ -90,8 +93,7 @@ class Game:
 
             self.stat_manager.num_guesses += 1
             if guess_int == answer:
-                print(f"You guessed it! The number was {answer}.")
-                self.stat_manager.wins += 1
+                print("You guessed it!")
                 self.win()
                 break
 
@@ -103,12 +105,11 @@ class Game:
                 tries_left -= 1
 
             if tries_left == 0:
-                self.stat_manager.losses += 1
                 self.lose()
                 print("You are out of guesses.")
                 break
 
-        print("Thanks for playing. Returning to menu..")
+        print(f"The number was {answer}. Thanks for playing!")
         # Automatically save stats after every completed game, otherwise user must do it manually
         self.saveGameStats()
 
@@ -117,13 +118,42 @@ class Game:
         self.HAS_SAVE = True
 
     def win(self):
-        pass
+        self.stat_manager.wins += 1
+        if self.DIFFICULTY == 'easy':
+            self.stat_manager.num_easy_wins += 1
+        elif self.DIFFICULTY == 'medium':
+            self.stat_manager.num_med_wins += 1
+        else:
+            self.stat_manager.num_hard_wins += 1
 
     def lose(self):
-        pass
+        self.stat_manager.losses += 1
+
+    def changeDifficulty(self, difficulty: str):
+        if difficulty in ['easy', 'medium', 'hard']:
+            self.setDifficulty(difficulty)
+            print(f"Difficulty has been set to {self.DIFFICULTY}")
+            print(f"This mode gives you {self.STARTING_CHANCES} chances")
+        else:
+            print("Invalid difficulty level entered!")
 
     def setDifficulty(self, difficulty: str):
-        pass
+        if difficulty == 'easy':
+            self.DIFFICULTY = 'easy'
+            self.setGenerateStartEnd(1, 10)
+            self.STARTING_CHANCES = 5
+        elif difficulty == 'medium':
+            self.DIFFICULTY = 'medium'
+            self.setGenerateStartEnd(1, 100)
+            self.STARTING_CHANCES = 7
+        elif difficulty == 'hard':
+            self.DIFFICULTY = 'hard'
+            self.setGenerateStartEnd(1, 1000)
+            self.STARTING_CHANCES = 10
+
+    def setGenerateStartEnd(self, start, end):
+        self.ANSWER_RANGE_START = start
+        self.ANSWER_RANGE_END = end
 
     @staticmethod
     def stopGame():
