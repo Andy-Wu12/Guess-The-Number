@@ -103,7 +103,6 @@ class TestGame:
         for difficulty in rand_diffs:
             self.game.setDifficulty(difficulty)
             self.game.win()
-            print(f"{self.game.stat_manager}\n")
             if difficulty == difficultyToCheck:
                 num_diff_wins += 1
 
