@@ -16,6 +16,7 @@ class Game:
         self.STARTING_CHANCES = chances
         self.SAVEFILE_NAME = "./persistent"
         self.HAS_SAVE = os.path.exists(self.SAVEFILE_NAME)
+        self.DIFFICULTY = "easy"
 
         self.menu_options = {
             1: "Play",
@@ -24,7 +25,6 @@ class Game:
             4: "Statistics",
             9: "Quit"
         }
-
         self.stat_manager = StatManager()
 
     def run(self):
@@ -93,8 +93,10 @@ class Game:
             if guess_int == answer:
                 print(f"You guessed it! The number was {answer}.")
                 self.stat_manager.wins += 1
-                game_over = True
-            elif guess_int > answer:
+                self.win()
+                break
+
+            if guess_int > answer:
                 print("Your guess was higher than the answer.\n")
                 tries_left -= 1
             else:
@@ -103,7 +105,7 @@ class Game:
 
             if tries_left == 0:
                 self.stat_manager.losses += 1
-                game_over = True
+                self.lose()
                 print("You are out of guesses.")
 
         print("Thanks for playing. Returning to menu..")
@@ -113,6 +115,15 @@ class Game:
     def saveGameStats(self):
         self.stat_manager.save(self.SAVEFILE_NAME)
         self.HAS_SAVE = True
+
+    def win(self):
+        pass
+
+    def lose(self):
+        pass
+
+    def setDifficulty(self, difficulty: str):
+        pass
 
     @staticmethod
     def stopGame():
