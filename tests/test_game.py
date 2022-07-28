@@ -70,7 +70,7 @@ class TestGame:
 
     # TEST: Ensure invalid 'difficulty' parameter doesn't do anything
     def test_set_invalid_diff(self):
-        invalid_diffs = [''.join(random.choices(string.ascii_lowercase, k=5)) for _ in range(1000)]
+        invalid_diffs = [''.join(random.choices(string.ascii_lowercase, k=3)) for _ in range(1000)]
         self.game.setDifficulty('medium')
 
         for diff in invalid_diffs:

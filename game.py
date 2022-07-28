@@ -73,11 +73,10 @@ class Game:
         lowest_num = self.ANSWER_RANGE_START
         highest_num = self.ANSWER_RANGE_END
 
-        game_over = False
         answer = randint(lowest_num, highest_num)
         tries_left = self.STARTING_CHANCES
 
-        while not game_over:
+        while True:
             print(f"You have {tries_left} guesses remaining\n")
             guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
             try:
@@ -107,6 +106,7 @@ class Game:
                 self.stat_manager.losses += 1
                 self.lose()
                 print("You are out of guesses.")
+                break
 
         print("Thanks for playing. Returning to menu..")
         # Automatically save stats after every completed game, otherwise user must do it manually
