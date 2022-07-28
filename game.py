@@ -93,8 +93,10 @@ class Game:
             if guess_int == answer:
                 print(f"You guessed it! The number was {answer}.")
                 self.stat_manager.wins += 1
-                game_over = True
-            elif guess_int > answer:
+                self.win()
+                break
+
+            if guess_int > answer:
                 print("Your guess was higher than the answer.\n")
                 tries_left -= 1
             else:
@@ -103,7 +105,7 @@ class Game:
 
             if tries_left == 0:
                 self.stat_manager.losses += 1
-                game_over = True
+                self.lose()
                 print("You are out of guesses.")
 
         print("Thanks for playing. Returning to menu..")
@@ -118,6 +120,9 @@ class Game:
         pass
 
     def lose(self):
+        pass
+
+    def setDifficulty(self, difficulty: str):
         pass
 
     @staticmethod
