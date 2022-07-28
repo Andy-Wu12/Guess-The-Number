@@ -52,7 +52,6 @@ class StatManager:
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 stat_data = json.loads(f.read())
-                print(stat_data)
             f.close()
         except (FileNotFoundError, json.JSONDecodeError) as e:
             raise e
