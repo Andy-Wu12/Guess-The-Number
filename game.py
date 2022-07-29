@@ -93,7 +93,7 @@ class Game:
 
             self.stat_manager.num_guesses += 1
             if guess_int == answer:
-                if tries_left:
+                if tries_left == self.STARTING_CHANCES - 1:
                     print("You guessed it on the first try!")
                     self.firstGuessWin()
                 else:

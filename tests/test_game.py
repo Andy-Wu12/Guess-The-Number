@@ -1,6 +1,6 @@
 import os.path
 import random
-from typing import List, Callable
+import string
 
 import pytest
 import json
@@ -96,9 +96,9 @@ class TestGame:
     def test_first_guess_win(self):
         num_first_guesses = 0
         num_total_wins = 0
-        win_types: List[Callable] = [self.game.win(), self.game.firstGuessWin()]
+        win_types = [self.game.win, self.game.firstGuessWin]
 
-        # regular_win_name = win_types[0].__name__
+        # regular_win_name = win_types[0]().__name__
         first_guess_win_name = win_types[1].__name__
 
         rand_wins = [random.choice(win_types) for _ in range(1000)]
