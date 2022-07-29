@@ -93,13 +93,17 @@ class Game:
 
             self.stat_manager.num_guesses += 1
             if guess_int == answer:
-                print("You guessed it!")
-                self.win()
+                if tries_left == self.STARTING_CHANCES - 1:
+                    print("You guessed it on the first try!")
+                    self.firstGuessWin()
+                else:
+                    print("You guessed it!")
+                    self.win()
                 break
-
             if guess_int > answer:
                 print("Your guess was higher than the answer.\n")
                 tries_left -= 1
+                print(self.STARTING_CHANCES)
             else:
                 print("Your guess was lower than the answer.\n")
                 tries_left -= 1
@@ -116,6 +120,10 @@ class Game:
     def saveGameStats(self):
         self.stat_manager.save(self.SAVEFILE_NAME)
         self.HAS_SAVE = True
+
+    def firstGuessWin(self):
+        self.stat_manager.num_first_correct += 1
+        self.win()
 
     def win(self):
         self.stat_manager.wins += 1

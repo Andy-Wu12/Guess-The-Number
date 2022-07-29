@@ -87,12 +87,37 @@ class TestGame:
         num_med_wins = self.generateDifficultyWinTest('medium', 10)
         assert self.game.stat_manager.num_med_wins == num_med_wins
 
-        # TEST: Ensure wins on hard increment "num_hard_wins"
+    # TEST: Ensure wins on hard increment "num_hard_wins"
     def test_hard_wins(self):
         num_hard_wins = self.generateDifficultyWinTest('hard', 10)
         assert self.game.stat_manager.num_hard_wins == num_hard_wins
 
-        # Helpers
+    # TEST: Ensure correct stats are incremented after player guesses correctly on first try
+    def test_first_guess_win(self):
+        num_first_guesses = 0
+        num_total_wins = 0
+        win_types = [self.game.win, self.game.firstGuessWin]
+
+        # regular_win_name = win_types[0]().__name__
+        first_guess_win_name = win_types[1].__name__
+
+        rand_wins = [random.choice(win_types) for _ in range(1000)]
+
+        for win in rand_wins:
+            win()
+            if win.__name__ == first_guess_win_name:
+                num_first_guesses += 1
+
+            num_total_wins += 1
+
+        assert self.game.stat_manager.wins == num_total_wins
+        assert self.game.stat_manager.num_first_correct == num_first_guesses
+
+    # Helpers
+    def setDiffAndWin(self, difficulty: str):
+        self.game.setDifficulty(difficulty)
+        self.game.win()
+
     def generateDifficultiesList(self, amount: int):
         return [random.choice(self.difficulties) for _ in range(amount)]
 
