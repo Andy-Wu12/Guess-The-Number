@@ -87,12 +87,36 @@ class TestGame:
         num_med_wins = self.generateDifficultyWinTest('medium', 10)
         assert self.game.stat_manager.num_med_wins == num_med_wins
 
-        # TEST: Ensure wins on hard increment "num_hard_wins"
+    # TEST: Ensure wins on hard increment "num_hard_wins"
     def test_hard_wins(self):
         num_hard_wins = self.generateDifficultyWinTest('hard', 10)
         assert self.game.stat_manager.num_hard_wins == num_hard_wins
 
-        # Helpers
+    # TEST: Ensure highest difficulty win correctly matches current difficulty
+    def test_highest_diff_same_as_difficulty(self):
+        # Default should be empty ("")
+        assert self.game.stat_manager.highest_difficulty_win == ''
+
+        for difficulty in self.difficulties:
+            self.setDiffAndWin(difficulty)
+            assert self.game.stat_manager.highest_difficulty_win == difficulty
+
+    # TEST: Ensure highest difficulty win only changes if current difficulty is higher than previously stored
+    def test_highest_diff_correct_change(self):
+        self.setDiffAndWin('hard')
+        assert self.game.stat_manager.highest_difficulty_win == 'hard'
+
+        rand_diffs = self.generateDifficultiesList(1000)
+        for difficulty in rand_diffs:
+            self.setDiffAndWin(difficulty)
+            self.game.win()
+            assert self.game.stat_manager.highest_difficulty_win == 'hard'
+
+    # Helpers
+    def setDiffAndWin(self, difficulty: str):
+        self.game.setDifficulty(difficulty)
+        self.game.win()
+
     def generateDifficultiesList(self, amount: int):
         return [random.choice(self.difficulties) for _ in range(amount)]
 
