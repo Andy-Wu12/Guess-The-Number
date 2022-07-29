@@ -1,6 +1,6 @@
 import os.path
 import random
-import string
+from typing import List, Callable
 
 import pytest
 import json
@@ -92,25 +92,26 @@ class TestGame:
         num_hard_wins = self.generateDifficultyWinTest('hard', 10)
         assert self.game.stat_manager.num_hard_wins == num_hard_wins
 
-    # TEST: Ensure highest difficulty win correctly matches current difficulty
-    def test_highest_diff_same_as_difficulty(self):
-        # Default should be empty ("")
-        assert self.game.stat_manager.highest_difficulty_win == ''
+    # TEST: Ensure correct stats are incremented after player guesses correctly on first try
+    def test_first_guess_win(self):
+        num_first_guesses = 0
+        num_total_wins = 0
+        win_types: List[Callable] = [self.game.win(), self.game.firstGuessWin()]
 
-        for difficulty in self.difficulties:
-            self.setDiffAndWin(difficulty)
-            assert self.game.stat_manager.highest_difficulty_win == difficulty
+        # regular_win_name = win_types[0].__name__
+        first_guess_win_name = win_types[1].__name__
 
-    # TEST: Ensure highest difficulty win only changes if current difficulty is higher than previously stored
-    def test_highest_diff_correct_change(self):
-        self.setDiffAndWin('hard')
-        assert self.game.stat_manager.highest_difficulty_win == 'hard'
+        rand_wins = [random.choice(win_types) for _ in range(1000)]
 
-        rand_diffs = self.generateDifficultiesList(1000)
-        for difficulty in rand_diffs:
-            self.setDiffAndWin(difficulty)
-            self.game.win()
-            assert self.game.stat_manager.highest_difficulty_win == 'hard'
+        for win in rand_wins:
+            win()
+            if win.__name__ == first_guess_win_name:
+                num_first_guesses += 1
+
+            num_total_wins += 1
+
+        assert self.game.stat_manager.wins == num_total_wins
+        assert self.game.stat_manager.num_first_correct == num_first_guesses
 
     # Helpers
     def setDiffAndWin(self, difficulty: str):

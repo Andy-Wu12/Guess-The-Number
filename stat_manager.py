@@ -8,9 +8,6 @@ varNameToStatName = {
         "losses": "Games Lost",
         "num_guesses": "Total # of valid guesses",
         "num_first_correct": "Number of correct first guesses",
-
-        # Miscellaneous
-        "highest_difficulty_win": "Highest difficulty beaten",
         "num_easy_wins": "Wins on easy mode",
         "num_med_wins": "Wins on medium mode",
         "num_hard_wins": "Wins on hard mode"
@@ -23,9 +20,6 @@ class StatManager:
         self.losses = 0
         self.num_guesses = 0
         self.num_first_correct = 0
-
-        # Miscellaneous
-        self.highest_difficulty_win = ""
         self.num_easy_wins = 0
         self.num_med_wins = 0
         self.num_hard_wins = 0
