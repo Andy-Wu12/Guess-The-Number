@@ -27,7 +27,6 @@ class Game:
             5: "Choose difficulty",
             9: "Quit"
         }
-        
         self.stat_manager = stat_manager
 
     def run(self):
@@ -103,8 +102,8 @@ class Game:
                     print("You guessed it!")
                     self.win()
                 break
-            else:
-                tries_left -= 1
+
+            tries_left -= 1
 
             if tries_left == 0:
                 self.lose()
@@ -122,7 +121,7 @@ class Game:
     def firstGuessWin(self):
         self.stat_manager.num_first_correct += 1
         self.win()
-        
+
     def win(self):
         self.stat_manager.wins += 1
         if self.DIFFICULTY == 'easy':
@@ -169,7 +168,7 @@ def isCorrectGuess(guess: int, answer: int):
     if guess == answer:
         return True
 
-    elif guess > answer:
+    if guess > answer:
         print("Your guess was higher than the answer.\n")
     else:
         print("Your guess was lower than the answer.\n")
