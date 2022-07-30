@@ -1,11 +1,13 @@
 import os.path
 import random
 import string
+import sys
 
 import pytest
 import json
 
-from game import Game
+from game import Game, isCorrectGuess
+from stat_manager import StatManager
 
 def get_stat_data(filename: str) -> dict:
     with open(filename, "r", encoding="utf-8") as f:
@@ -18,7 +20,7 @@ class TestGame:
     @pytest.fixture(autouse=True)
     def setup_and_teardown(self):
         # Setup code needed before tests run
-        self.game = Game()
+        self.game = Game(StatManager())
         self.difficulties = ['easy', 'medium', 'hard']
         # Actual tests run while yielding
         yield
@@ -26,10 +28,6 @@ class TestGame:
         if os.path.exists(self.game.SAVEFILE_NAME):
             from os import remove
             remove(self.game.SAVEFILE_NAME)
-
-    # TEST: Initial persistent file should not exist on very first startup
-    def test_savefile_missing_on_first_start(self):
-        assert not os.path.exists(self.game.SAVEFILE_NAME)
 
     # TEST: Ensure persistent file exists after saving
     def test_savefile_created_on_save(self):
@@ -98,7 +96,7 @@ class TestGame:
         num_total_wins = 0
         win_types = [self.game.win, self.game.firstGuessWin]
 
-        # regular_win_name = win_types[0]().__name__
+        # regular_win_name = win_types[0].__name__
         first_guess_win_name = win_types[1].__name__
 
         rand_wins = [random.choice(win_types) for _ in range(1000)]
@@ -112,6 +110,18 @@ class TestGame:
 
         assert self.game.stat_manager.wins == num_total_wins
         assert self.game.stat_manager.num_first_correct == num_first_guesses
+
+    # TEST: Ensure isCorrectGuess returns True if numbers are equal, False otherwise
+    def test_correct_guess(self):
+        num_iterations = 10000
+        upper_bound = sys.maxsize
+        for i in range(num_iterations):
+            answer = random.randint(1, upper_bound)
+            guess = random.randint(1, upper_bound)
+            if answer == guess:
+                assert isCorrectGuess(answer, guess)
+            else:
+                assert not isCorrectGuess(answer, guess)
 
     # Helpers
     def setDiffAndWin(self, difficulty: str):

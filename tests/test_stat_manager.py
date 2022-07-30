@@ -1,4 +1,6 @@
 import os.path
+import random
+
 import pytest
 import json
 
@@ -71,6 +73,7 @@ class TestStatManager:
 
     # TEST: Ensure filenames are handled in a CASE-SENSITIVE way by StatManager
     def test_case_sensitive_load(self, tmp_path):
+        # Make temporary directory to store persistent file
         d = tmp_path / "test_dir"
         d.mkdir()
         new_file_name = "Test.json"
@@ -87,6 +90,24 @@ class TestStatManager:
 
         for stat_key in required_keys:
             assert stat_key in self.stat_manager.__dict__
+
+    # TEST: Ensure actual loaded values are what should have been saved after arbitray amount of games, wins, etc.
+    def test_file_correct_stat_values(self, test_files):
+        stat_vars = list(self.stat_manager.__dict__.keys())
+        num_iterations = 5000
+
+        for i in range(num_iterations):
+            rand_key_idx = random.randint(0, len(stat_vars) - 1)
+            rand_value = random.randint(0, 10000)
+            self.stat_manager.__dict__[stat_vars[rand_key_idx]] = rand_value
+
+        correct_vars = self.stat_manager.__dict__
+        self.stat_manager.save(getFilePath('persistent', test_files))
+
+        # Create new stat_manager and ensure loaded vars contain the correct value
+        test_sm = StatManager()
+        test_sm.load(getFilePath('persistent', test_files))
+        assert correct_vars == test_sm.__dict__
 
     # TEST: Ensure exception is thrown if JSON document does not provide necessary stats
     def test_file_incorrect_stat_keys(self, test_files):

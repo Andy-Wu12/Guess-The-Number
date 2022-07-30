@@ -10,7 +10,8 @@ import util
 import GameExceptions
 
 class Game:
-    def __init__(self, difficulty: str = 'easy', range_start: int = 1, range_end: int = 10, chances: int = 5):
+    def __init__(self, stat_manager: StatManager, difficulty: str = 'easy', range_start: int = 1, range_end: int = 10,
+                 chances: int = 5):
         self.ANSWER_RANGE_START = range_start
         self.ANSWER_RANGE_END = range_end
         self.STARTING_CHANCES = chances
@@ -26,7 +27,7 @@ class Game:
             5: "Choose difficulty",
             9: "Quit"
         }
-        self.stat_manager = StatManager()
+        self.stat_manager = stat_manager
 
     def run(self):
         while True:
@@ -68,7 +69,7 @@ class Game:
         elif menu_choice == 5:
             self.changeDifficulty(input("Enter difficulty (easy, medium, hard): "))
         elif menu_choice == 9:
-            self.stopGame()
+            stopGame()
         else:
             raise GameExceptions.OutOfRangeError
 
@@ -92,21 +93,17 @@ class Game:
                 continue
 
             self.stat_manager.num_guesses += 1
-            if guess_int == answer:
-                if tries_left == self.STARTING_CHANCES - 1:
+
+            if isCorrectGuess(guess_int, answer):
+                if tries_left == self.STARTING_CHANCES:
                     print("You guessed it on the first try!")
                     self.firstGuessWin()
                 else:
                     print("You guessed it!")
                     self.win()
                 break
-            if guess_int > answer:
-                print("Your guess was higher than the answer.\n")
-                tries_left -= 1
-                print(self.STARTING_CHANCES)
-            else:
-                print("Your guess was lower than the answer.\n")
-                tries_left -= 1
+
+            tries_left -= 1
 
             if tries_left == 0:
                 self.lose()
@@ -163,11 +160,21 @@ class Game:
         self.ANSWER_RANGE_START = start
         self.ANSWER_RANGE_END = end
 
-    @staticmethod
-    def stopGame():
-        print("Exiting program...")
-        sys.exit()
+def stopGame():
+    print("Exiting program...")
+    sys.exit()
+
+def isCorrectGuess(guess: int, answer: int):
+    if guess == answer:
+        return True
+
+    if guess > answer:
+        print("Your guess was higher than the answer.\n")
+    else:
+        print("Your guess was lower than the answer.\n")
+
+    return False
 
 if __name__ == "__main__":
-    game = Game()
+    game = Game(StatManager())
     game.run()
