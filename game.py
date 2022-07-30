@@ -27,6 +27,7 @@ class Game:
             5: "Choose difficulty",
             9: "Quit"
         }
+        
         self.stat_manager = stat_manager
 
     def run(self):
@@ -121,7 +122,7 @@ class Game:
     def firstGuessWin(self):
         self.stat_manager.num_first_correct += 1
         self.win()
-
+        
     def win(self):
         self.stat_manager.wins += 1
         if self.DIFFICULTY == 'easy':
