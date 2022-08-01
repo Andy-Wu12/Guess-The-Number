@@ -1,5 +1,6 @@
 # Built-in modules
 from random import randint
+from typing import List
 import sys
 import os.path
 from json import JSONDecodeError
@@ -12,6 +13,7 @@ import GameExceptions
 class Game:
     def __init__(self, stat_manager: StatManager, difficulty: str = 'easy', range_start: int = 1, range_end: int = 10,
                  chances: int = 5):
+        # Config
         self.ANSWER_RANGE_START = range_start
         self.ANSWER_RANGE_END = range_end
         self.STARTING_CHANCES = chances
@@ -27,6 +29,7 @@ class Game:
             5: "Choose difficulty",
             9: "Quit"
         }
+
         self.stat_manager = stat_manager
 
     def run(self):
@@ -74,6 +77,9 @@ class Game:
             raise GameExceptions.OutOfRangeError
 
     def playGame(self):
+        lower_guesses = []
+        higher_guesses = []
+
         lowest_num = self.ANSWER_RANGE_START
         highest_num = self.ANSWER_RANGE_END
 
@@ -81,7 +87,8 @@ class Game:
         tries_left = self.STARTING_CHANCES
 
         while True:
-            print(f"You have {tries_left} guesses remaining\n")
+            if tries_left < self.STARTING_CHANCES:
+                self.printGuessHistory(tries_left, lower_guesses, higher_guesses)
             guess_str = input(f"Enter a number between {lowest_num} and {highest_num}, inclusive: ")
             try:
                 guess_int = int(guess_str)
@@ -95,13 +102,15 @@ class Game:
             self.stat_manager.num_guesses += 1
 
             if isCorrectGuess(guess_int, answer):
-                if tries_left == self.STARTING_CHANCES:
-                    print("You guessed it on the first try!")
-                    self.firstGuessWin()
-                else:
-                    print("You guessed it!")
-                    self.win()
+                self.handleCorrectGuess(tries_left)
                 break
+
+            if guess_int > answer:
+                print("Your guess was higher than the answer.\n")
+                higher_guesses.append(guess_int)
+            else:
+                print("Your guess was lower than the answer.\n")
+                lower_guesses.append(guess_int)
 
             tries_left -= 1
 
@@ -114,6 +123,18 @@ class Game:
         # Automatically save stats after every completed game, otherwise user must do it manually
         self.saveGameStats()
 
+    def printGuessHistory(self, chances_left, lower_list, higher_list):
+        num_guesses = self.STARTING_CHANCES - chances_left
+        if num_guesses > 1:
+            print(f"In {num_guesses} guesses you have tried: ")
+        else:
+            print(f"In {num_guesses} guess you have tried: ")
+
+        print(f"Lower: {lower_list}")
+        print(f"Higher: {higher_list}")
+
+        print(f"Guesses remaining: {chances_left}\n")
+
     def saveGameStats(self):
         self.stat_manager.save(self.SAVEFILE_NAME)
         self.HAS_SAVE = True
@@ -121,6 +142,14 @@ class Game:
     def firstGuessWin(self):
         self.stat_manager.num_first_correct += 1
         self.win()
+
+    def handleCorrectGuess(self, chances_left):
+        if chances_left == self.STARTING_CHANCES:
+            print("You guessed it on the first try!")
+            self.firstGuessWin()
+        else:
+            print("You guessed it!")
+            self.win()
 
     def win(self):
         self.stat_manager.wins += 1
@@ -167,11 +196,6 @@ def stopGame():
 def isCorrectGuess(guess: int, answer: int):
     if guess == answer:
         return True
-
-    if guess > answer:
-        print("Your guess was higher than the answer.\n")
-    else:
-        print("Your guess was lower than the answer.\n")
 
     return False
 

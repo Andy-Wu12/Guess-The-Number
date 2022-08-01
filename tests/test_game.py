@@ -123,6 +123,8 @@ class TestGame:
             else:
                 assert not isCorrectGuess(answer, guess)
 
+    # TEST: Ensure guess is added to correct list
+
     # Helpers
     def setDiffAndWin(self, difficulty: str):
         self.game.setDifficulty(difficulty)
