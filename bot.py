@@ -11,7 +11,7 @@ class GuessBot:
         self.lower_bound = new_lower
 
     def getNextGuess(self):
-        return self.upper_bound // 2
+        return self.lower_bound + ((self.upper_bound - self.lower_bound) // 2)
 
     def __str__(self):
         return f"Bot guessing in the range of {self.lower_bound} to {self.upper_bound}"

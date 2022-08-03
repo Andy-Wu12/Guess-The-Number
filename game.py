@@ -33,6 +33,24 @@ class Game:
 
     def runOptimalSim(self, start_num: int, end_num: int):
         bot = GuessBot(start_num, end_num)
+        answer = randint(start_num, end_num)
+
+        bot_guess = bot.getNextGuess()
+        num_guesses = 1
+        guesses = [bot_guess]
+
+        while bot_guess != answer:
+            if bot_guess > answer:
+                bot.setUpperBound(bot_guess - 1)
+            else:
+                bot.setLowerBound(bot_guess + 1)
+
+            bot_guess = bot.getNextGuess()
+            num_guesses += 1
+            guesses.append(bot_guess)
+
+        print(f"The computer guessed the correct answer in {num_guesses} guesses.\n")
+        print(f"It's guess order is: {guesses}")
 
     def run(self):
         while True:
