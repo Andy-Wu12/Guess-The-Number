@@ -4,3 +4,6 @@ class OutOfRangeError(Exception):
 
 class InvalidSaveFormatError(Exception):
     pass
+
+class InvalidRangeError(Exception):
+    pass

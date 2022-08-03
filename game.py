@@ -6,6 +6,7 @@ from json import JSONDecodeError
 
 # Custom modules
 from stat_manager import StatManager
+from bot import GuessBot
 import util
 import GameExceptions
 
@@ -25,9 +26,13 @@ class Game:
             3: "Load save data",
             4: "Statistics",
             5: "Choose difficulty",
+            6: "Simulate Optimal Game",
             9: "Quit"
         }
         self.stat_manager = stat_manager
+
+    def runOptimalSim(self, start_num: int, end_num: int):
+        bot = GuessBot(start_num, end_num)
 
     def run(self):
         while True:
@@ -68,6 +73,20 @@ class Game:
             self.stat_manager.pretty_print()
         elif menu_choice == 5:
             self.changeDifficulty(input("Enter difficulty (easy, medium, hard): "))
+        elif menu_choice == 6:
+            try:
+                start_num = int(input("Enter the starting value for the range of the sim: "))
+                end_num = int(input("Enter the ending value for the range of the sim: "))
+                print("\n")
+                if start_num >= end_num:
+                    raise GameExceptions.InvalidRangeError
+                else:
+                    self.runOptimalSim(start_num, end_num)
+            except ValueError:
+                print("Both inputs need to be numbers! Try again.")
+            except GameExceptions.InvalidRangeError:
+                print("ERROR - Cannot simulate between the given range of numbers!")
+                print("The starting number must be less than the end!\n")
         elif menu_choice == 9:
             stopGame()
         else:
