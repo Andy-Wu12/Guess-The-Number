@@ -41,7 +41,7 @@ class Game:
             try:
                 option_key = int(user_in)
                 self.handleMenuChoice(option_key)
-            except (ValueError, game_exceptions.OutOfRangeError):
+            except (ValueError, game_exceptions.InvalidOptionError):
                 print("You did not enter a valid option. Please try again.\n")
                 continue
 
@@ -56,45 +56,22 @@ class Game:
         util.printWithBorder(menu_str.strip())
 
     def handleMenuChoice(self, menu_choice: int):
-        if menu_choice == 1:
-            self.playGame()
-        elif menu_choice == 2:
-            print("Saving data...")
-            self.saveGameStats()
-        elif menu_choice == 3 and self.HAS_SAVE:
-            try:
-                self.stat_manager.load(self.SAVEFILE_NAME)
-            except FileNotFoundError:
-                print("No save file found!")
-            except (JSONDecodeError, game_exceptions.InvalidSaveFormatError):
-                print("Error loading save file!")
-                print("Make a new one by saving or completing a game!")
-                self.HAS_SAVE = False
-        elif menu_choice == 4:
-            self.stat_manager.pretty_print()
-        elif menu_choice == 5:
-            difficulty_mess = "Enter difficulty (easy, medium, hard): "
-            self.changeDifficulty(input(difficulty_mess))
-        elif menu_choice == 6:
-            try:
-                start_mess = "Enter the lowest value for the sim: "
-                end_mess = "Enter the highest value for the sim: "
-                start_num = int(input(start_mess))
-                end_num = int(input(end_mess))
-                # New line to reduce statement cluster
-                print()
-                if start_num >= end_num:
-                    raise game_exceptions.InvalidRangeError
-                runOptimalSim(start_num, end_num)
-            except ValueError:
-                print("Both inputs need to be numbers! Try again.")
-            except game_exceptions.InvalidRangeError:
-                print("Cannot simulate between the given range of numbers!")
-                print("The starting number must be less than the end!\n")
-        elif menu_choice == 9:
-            stopGame()
+        choice_functions = {
+            1: self.playGame,
+            2: self.saveGameStats,
+            3: self.loadGameStats,
+            4: self.stat_manager.pretty_print,
+            5: self.requestDifficultyChange,
+            6: setupSim,
+            9: stopGame
+        }
+
+        if menu_choice in choice_functions:
+            if menu_choice == 3 and not self.HAS_SAVE:
+                raise game_exceptions.InvalidOptionError
+            choice_functions[menu_choice]()
         else:
-            raise game_exceptions.OutOfRangeError
+            raise game_exceptions.InvalidOptionError
 
     def playGame(self):
         lower_guesses = []
@@ -118,8 +95,8 @@ class Game:
                 guess_int = int(guess_str)
                 # Handle error where user guesses that cannot be correct
                 if self.isOutOfRange(guess_int):
-                    raise game_exceptions.OutOfRangeError
-            except (ValueError, game_exceptions.OutOfRangeError):
+                    raise game_exceptions.InvalidOptionError
+            except (ValueError, game_exceptions.InvalidOptionError):
                 print("You did not enter an integer in the given range!")
                 continue
 
@@ -160,8 +137,20 @@ class Game:
         print(f"Guesses remaining: {chances_left}\n")
 
     def saveGameStats(self):
+        print("Saving data...")
         self.stat_manager.save(self.SAVEFILE_NAME)
         self.HAS_SAVE = True
+
+    def loadGameStats(self):
+        try:
+            self.stat_manager.load(self.SAVEFILE_NAME)
+        except FileNotFoundError:
+            print("No save file found!")
+            self.HAS_SAVE = False
+        except (JSONDecodeError, game_exceptions.InvalidSaveFormatError):
+            print("Error loading save file!")
+            print("Make a new one by saving or completing a game!")
+            self.HAS_SAVE = False
 
     def firstGuessWin(self):
         self.stat_manager.num_first_correct += 1
@@ -186,6 +175,10 @@ class Game:
 
     def lose(self):
         self.stat_manager.losses += 1
+
+    def requestDifficultyChange(self):
+        difficulty_mess = "Enter difficulty (easy, medium, hard): "
+        self.changeDifficulty(input(difficulty_mess))
 
     def changeDifficulty(self, difficulty: str):
         if difficulty in ['easy', 'medium', 'hard']:
@@ -217,7 +210,9 @@ class Game:
         lower_bound = self.ANSWER_RANGE_START
         upper_bound = self.ANSWER_RANGE_END
         if guess < lower_bound or guess > upper_bound:
-            raise False
+            return True
+
+        return False
 
 
 def stopGame():
@@ -230,6 +225,24 @@ def isCorrectGuess(guess: int, answer: int):
         return True
 
     return False
+
+
+def setupSim():
+    try:
+        start_mess = "Enter the lowest value for the sim: "
+        end_mess = "Enter the highest value for the sim: "
+        start_num = int(input(start_mess))
+        end_num = int(input(end_mess))
+        # New line to reduce statement cluster
+        print()
+        if start_num >= end_num:
+            raise game_exceptions.InvalidRangeError
+        runOptimalSim(start_num, end_num)
+    except ValueError:
+        print("Both inputs need to be numbers! Try again.")
+    except game_exceptions.InvalidRangeError:
+        print("Cannot simulate between the given range of numbers!")
+        print("The starting number must be less than the end!\n")
 
 
 def runOptimalSim(start_num: int, end_num: int):

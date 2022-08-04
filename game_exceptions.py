@@ -1,5 +1,5 @@
 
-class OutOfRangeError(Exception):
+class InvalidOptionError(Exception):
     pass
 
 
