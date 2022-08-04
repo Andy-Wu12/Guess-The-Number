@@ -1,4 +1,5 @@
 # Built-in modules
+import random
 from random import randint
 from typing import List
 import sys
@@ -7,6 +8,7 @@ from json import JSONDecodeError
 
 # Custom modules
 from stat_manager import StatManager
+from bot import GuessBot
 import util
 import GameExceptions
 
@@ -27,6 +29,7 @@ class Game:
             3: "Load save data",
             4: "Statistics",
             5: "Choose difficulty",
+            6: "Simulate Optimal Game",
             9: "Quit"
         }
 
@@ -71,6 +74,21 @@ class Game:
             self.stat_manager.pretty_print()
         elif menu_choice == 5:
             self.changeDifficulty(input("Enter difficulty (easy, medium, hard): "))
+        elif menu_choice == 6:
+            try:
+                start_num = int(input("Enter the starting value for the range of the sim: "))
+                end_num = int(input("Enter the ending value for the range of the sim: "))
+                # New line to reduce statement cluster
+                print()
+                if start_num >= end_num:
+                    raise GameExceptions.InvalidRangeError
+                else:
+                    runOptimalSim(start_num, end_num)
+            except ValueError:
+                print("Both inputs need to be numbers! Try again.")
+            except GameExceptions.InvalidRangeError:
+                print("ERROR - Cannot simulate between the given range of numbers!")
+                print("The starting number must be less than the end!\n")
         elif menu_choice == 9:
             stopGame()
         else:
@@ -198,6 +216,27 @@ def isCorrectGuess(guess: int, answer: int):
         return True
 
     return False
+
+def runOptimalSim(start_num: int, end_num: int):
+    bot = GuessBot(start_num, end_num)
+    answer = randint(start_num, end_num)
+    print(f"The bot is looking for {answer}.")
+    bot_guess = bot.getNextGuess()
+    num_guesses = 1
+    guesses = [bot_guess]
+
+    while bot_guess != answer:
+        if bot_guess > answer:
+            bot.setUpperBound(bot_guess - 1)
+        else:
+            bot.setLowerBound(bot_guess + 1)
+
+        bot_guess = bot.getNextGuess()
+        num_guesses += 1
+        guesses.append(bot_guess)
+
+    print(f"The bot guessed the correct answer in {num_guesses} guesses.\n")
+    print(f"It's guess order is: {guesses}\n")
 
 if __name__ == "__main__":
     game = Game(StatManager())
