@@ -14,4 +14,5 @@ class GuessBot:
         return self.lower_bound + ((self.upper_bound - self.lower_bound) // 2)
 
     def __str__(self):
-        return f"Bot guessing in the range of {self.lower_bound} to {self.upper_bound}"
+        return f"Bot guessing in the range of " \
+               f"{self.lower_bound} to {self.upper_bound}"
