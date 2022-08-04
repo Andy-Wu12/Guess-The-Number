@@ -1,9 +1,9 @@
 import json
 
 import util
-import GameExceptions
+import game_exceptions
 
-varNameToStatName = {
+statDict = {
         "wins": "Games Won",
         "losses": "Games Lost",
         "num_guesses": "Total # of valid guesses",
@@ -12,6 +12,7 @@ varNameToStatName = {
         "num_med_wins": "Wins on medium mode",
         "num_hard_wins": "Wins on hard mode"
     }
+
 
 class StatManager:
     def __init__(self):
@@ -25,14 +26,17 @@ class StatManager:
         self.num_hard_wins = 0
 
     def __str__(self):
-        return "\n".join(f"{stat}: {value}" for stat, value in self.__dict__.items())
+        stat_kvs = self.__dict__.items()
+        return "\n".join(f"{stat}: {val}" for stat, val in stat_kvs)
 
     def to_json(self):
         return self.__dict__
 
     def pretty_print(self):
+        stat_kvs = self.__dict__.items()
+        str_list = [f"{statDict[stat]}: {val}" for stat, val in stat_kvs]
         print("\nYour game statistics")
-        util.printWithBorder("\n".join(f"{varNameToStatName[stat]}: {value}" for stat, value in self.__dict__.items()))
+        util.printWithBorder("\n".join(str_list))
 
     def save(self, filename: str):
         with open(filename, "w", encoding="utf-8") as f:
@@ -48,9 +52,10 @@ class StatManager:
         except (FileNotFoundError, json.JSONDecodeError) as e:
             raise e
 
-        # Don't depend on current StatManager object. Create fresh instance and compare keys and value types with it
+        # Don't depend on current StatManager
+        # Create new instance and compare keys and value types with it
         if not isValidDict(StatManager().__dict__, stat_data):
-            raise GameExceptions.InvalidSaveFormatError
+            raise game_exceptions.InvalidSaveFormatError
 
         self.__dict__ = stat_data
         print("Load successful!")
@@ -58,7 +63,7 @@ class StatManager:
 
 
 def isValidDict(desired_dict, dict_to_check):
-    # JSON in file, but does not contain the necessary stats required by StatManager
+    # JSON in file, but does not contain the stats required by StatManager
     for key, value in desired_dict.items():
         if key not in dict_to_check:
             return False
