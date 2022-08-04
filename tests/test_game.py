@@ -9,12 +9,18 @@ import json
 from game import Game, isCorrectGuess
 from stat_manager import StatManager
 
+
 def get_stat_data(filename: str) -> dict:
     with open(filename, "r", encoding="utf-8") as f:
         stat_data = json.load(f)
     f.close()
 
     return stat_data
+
+
+def generateRandStr(num_letters: int):
+    return ''.join(random.choices(string.ascii_lowercase, k=num_letters))
+
 
 class TestGame:
     @pytest.fixture(autouse=True)
@@ -29,19 +35,19 @@ class TestGame:
             from os import remove
             remove(self.game.SAVEFILE_NAME)
 
-    # TEST: Ensure persistent file exists after saving
+    # Ensure persistent file exists after saving
     def test_savefile_created_on_save(self):
         self.game.saveGameStats()
         assert os.path.exists(self.game.SAVEFILE_NAME)
 
-    # TEST: Ensure saving stats provides correct values.
-    # Additional tests can be added to check for specific stats, but it can get redundant
+    # Ensure saving stats provides correct values.
+    # Additional tests can be added to check for specific stats
     def test_saving_default__data(self):
         self.game.saveGameStats()
         stat_data = get_stat_data(self.game.SAVEFILE_NAME)
         assert stat_data == self.game.stat_manager.__dict__
 
-    # TEST: Ensure winning a game increases number of wins by exactly one
+    # Ensure winning a game increases number of wins by exactly one
     def test_winning(self):
         num_wins = 0
         for i in range(1000):
@@ -49,7 +55,7 @@ class TestGame:
             assert self.game.stat_manager.wins == num_wins + 1
             num_wins += 1
 
-    # TEST: Ensure losing a game increases number of losses by exactly one
+    # Ensure losing a game increases number of losses by exactly one
     def test_losing(self):
         num_losses = 0
         for i in range(1000):
@@ -57,7 +63,7 @@ class TestGame:
             assert self.game.stat_manager.losses == num_losses + 1
             num_losses += 1
 
-    # TEST: Ensure game difficulty changes properly after valid setdifficulty() call
+    # Ensure game difficulty changes properly after valid setdifficulty() call
     def test_set_difficulty(self):
         rand_diffs = self.generateDifficultiesList(1000)
         # Default difficulty test
@@ -66,31 +72,32 @@ class TestGame:
             self.game.setDifficulty(difficulty)
             assert self.game.DIFFICULTY == difficulty
 
-    # TEST: Ensure invalid 'difficulty' parameter doesn't do anything
+    # Ensure invalid 'difficulty' parameter doesn't do anything
     def test_set_invalid_diff(self):
-        invalid_diffs = [''.join(random.choices(string.ascii_lowercase, k=3)) for _ in range(1000)]
+        invalid_diffs = [generateRandStr(3) for _ in range(1000)]
+        print(invalid_diffs)
         self.game.setDifficulty('medium')
 
         for diff in invalid_diffs:
             self.game.setDifficulty(diff)
             assert self.game.DIFFICULTY == 'medium'
 
-    # TEST: Ensure wins on easy mode increment "num_easy_wins" and wins
+    # Ensure wins on easy mode increment "num_easy_wins" and wins
     def test_easy_win(self):
-        num_easy_wins = self.generateDifficultyWinTest('easy', 10)
+        num_easy_wins = self.generateDiffWinTest('easy', 10)
         assert self.game.stat_manager.num_easy_wins == num_easy_wins
 
-    # TEST: Ensure wins on med mode increment "num_med_wins"
+    # Ensure wins on med mode increment "num_med_wins"
     def test_med_win(self):
-        num_med_wins = self.generateDifficultyWinTest('medium', 10)
+        num_med_wins = self.generateDiffWinTest('medium', 10)
         assert self.game.stat_manager.num_med_wins == num_med_wins
 
-    # TEST: Ensure wins on hard increment "num_hard_wins"
+    # Ensure wins on hard increment "num_hard_wins"
     def test_hard_wins(self):
-        num_hard_wins = self.generateDifficultyWinTest('hard', 10)
+        num_hard_wins = self.generateDiffWinTest('hard', 10)
         assert self.game.stat_manager.num_hard_wins == num_hard_wins
 
-    # TEST: Ensure correct stats are incremented after player guesses correctly on first try
+    # Ensure stat incremented after player guesses correctly on first try
     def test_first_guess_win(self):
         num_first_guesses = 0
         num_total_wins = 0
@@ -111,7 +118,7 @@ class TestGame:
         assert self.game.stat_manager.wins == num_total_wins
         assert self.game.stat_manager.num_first_correct == num_first_guesses
 
-    # TEST: Ensure isCorrectGuess returns True if numbers are equal, False otherwise
+    # Ensure isCorrectGuess returns True if numbers are equal, False otherwise
     def test_correct_guess(self):
         num_iterations = 10000
         upper_bound = sys.maxsize
@@ -123,8 +130,6 @@ class TestGame:
             else:
                 assert not isCorrectGuess(answer, guess)
 
-    # TEST: Ensure guess is added to correct list
-
     # Helpers
     def setDiffAndWin(self, difficulty: str):
         self.game.setDifficulty(difficulty)
@@ -133,14 +138,14 @@ class TestGame:
     def generateDifficultiesList(self, amount: int):
         return [random.choice(self.difficulties) for _ in range(amount)]
 
-    def generateDifficultyWinTest(self, difficultyToCheck: str, iteration_count: int):
+    def generateDiffWinTest(self, diffToCheck: str, iter_count: int):
         num_diff_wins = 0
-        rand_diffs = self.generateDifficultiesList(iteration_count)
+        rand_diffs = self.generateDifficultiesList(iter_count)
 
         for difficulty in rand_diffs:
             self.game.setDifficulty(difficulty)
             self.game.win()
-            if difficulty == difficultyToCheck:
+            if difficulty == diffToCheck:
                 num_diff_wins += 1
 
         return num_diff_wins
