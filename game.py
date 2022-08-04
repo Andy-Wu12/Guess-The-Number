@@ -1,4 +1,5 @@
 # Built-in modules
+import random
 from random import randint
 import sys
 import os.path
@@ -30,27 +31,6 @@ class Game:
             9: "Quit"
         }
         self.stat_manager = stat_manager
-
-    def runOptimalSim(self, start_num: int, end_num: int):
-        bot = GuessBot(start_num, end_num)
-        answer = randint(start_num, end_num)
-
-        bot_guess = bot.getNextGuess()
-        num_guesses = 1
-        guesses = [bot_guess]
-
-        while bot_guess != answer:
-            if bot_guess > answer:
-                bot.setUpperBound(bot_guess - 1)
-            else:
-                bot.setLowerBound(bot_guess + 1)
-
-            bot_guess = bot.getNextGuess()
-            num_guesses += 1
-            guesses.append(bot_guess)
-
-        print(f"The computer guessed the correct answer in {num_guesses} guesses.\n")
-        print(f"It's guess order is: {guesses}")
 
     def run(self):
         while True:
@@ -95,11 +75,12 @@ class Game:
             try:
                 start_num = int(input("Enter the starting value for the range of the sim: "))
                 end_num = int(input("Enter the ending value for the range of the sim: "))
-                print("\n")
+                # New line to reduce statement cluster
+                print()
                 if start_num >= end_num:
                     raise GameExceptions.InvalidRangeError
                 else:
-                    self.runOptimalSim(start_num, end_num)
+                    runOptimalSim(start_num, end_num)
             except ValueError:
                 print("Both inputs need to be numbers! Try again.")
             except GameExceptions.InvalidRangeError:
@@ -211,6 +192,27 @@ def isCorrectGuess(guess: int, answer: int):
         print("Your guess was lower than the answer.\n")
 
     return False
+
+def runOptimalSim(start_num: int, end_num: int):
+    bot = GuessBot(start_num, end_num)
+    answer = randint(start_num, end_num)
+    print(f"The bot is looking for {answer}.")
+    bot_guess = bot.getNextGuess()
+    num_guesses = 1
+    guesses = [bot_guess]
+
+    while bot_guess != answer:
+        if bot_guess > answer:
+            bot.setUpperBound(bot_guess - 1)
+        else:
+            bot.setLowerBound(bot_guess + 1)
+
+        bot_guess = bot.getNextGuess()
+        num_guesses += 1
+        guesses.append(bot_guess)
+
+    print(f"The bot guessed the correct answer in {num_guesses} guesses.\n")
+    print(f"It's guess order is: {guesses}\n")
 
 if __name__ == "__main__":
     game = Game(StatManager())
