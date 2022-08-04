@@ -79,8 +79,7 @@ class Game:
                 print()
                 if start_num >= end_num:
                     raise GameExceptions.InvalidRangeError
-                else:
-                    runOptimalSim(start_num, end_num)
+                runOptimalSim(start_num, end_num)
             except ValueError:
                 print("Both inputs need to be numbers! Try again.")
             except GameExceptions.InvalidRangeError:
