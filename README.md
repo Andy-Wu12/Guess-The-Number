@@ -3,7 +3,6 @@ A command-line game where the player has to guess a randomly generated number in
 
 
 ## Features
-All the listed features are available from the in-game menu on startup.
 ### Play game
   - Start a new game on the currently set difficulty level (default 'easy').
 ### Difficulty levels (easy, medium, hard)
